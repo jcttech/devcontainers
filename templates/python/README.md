@@ -71,4 +71,4 @@ The container runs as the `developer` user (UID 1000). Python packages installed
 
 ## Security
 
-The firewall restricts outbound connections. PyPI access is configured through the allowed domains.
+The firewall restricts outbound connections. PyPI access (pypi.org, files.pythonhosted.org) is pre-configured in the allowed domains.

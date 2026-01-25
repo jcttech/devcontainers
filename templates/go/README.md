@@ -81,4 +81,4 @@ The template includes Go-specific settings:
 
 ## Security
 
-The firewall restricts outbound connections. Access to Go module proxy (proxy.golang.org) is configured through the allowed domains.
+The firewall restricts outbound connections. Access to Go module proxy (proxy.golang.org, sum.golang.org) is configured in the allowed domains.
