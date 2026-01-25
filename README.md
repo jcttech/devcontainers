@@ -48,7 +48,26 @@ This repository contains a collection of default devcontainer templates with all
 
 ## Usage
 
-### Using a Template
+### Quick Setup (Recommended)
+
+Use the provided setup script for easy installation:
+
+```bash
+# Clone this repository
+git clone https://github.com/jcttech/devcontainers.git
+
+# Run the setup script
+./devcontainers/setup.sh /path/to/your/project
+
+# Follow the prompts to select a template
+```
+
+The script will:
+- List available templates
+- Copy the selected template to your project
+- Provide next steps
+
+### Manual Setup
 
 1. Copy the template directory to your project's `.devcontainer` folder:
    ```bash
