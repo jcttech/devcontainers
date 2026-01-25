@@ -39,7 +39,7 @@
 
     "mounts": [
         "source=devcontainer-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
-        "source=devcontainer-claude-config-${devcontainerId},target=/home/vscode/.claude,type=volume",
+        "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind",
         "source=devcontainer-cargo-${devcontainerId},target=/home/vscode/.cargo/registry,type=volume"
     ],
 
