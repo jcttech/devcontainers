@@ -1,6 +1,6 @@
 {
     "name": "Python + Claude Code",
-    "image": "ghcr.io/NAMESPACE/devcontainer-base:latest",
+    "image": "ghcr.io/NAMESPACE/devcontainer-python:latest",
 
     "runArgs": [
         "--cap-add=NET_ADMIN",
