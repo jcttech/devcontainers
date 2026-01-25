@@ -1,6 +1,6 @@
 {
-    "name": "Python + Claude Code",
-    "image": "ghcr.io/NAMESPACE/devcontainer-base:latest",
+    "name": "Python + Rust + Claude Code",
+    "image": "ghcr.io/NAMESPACE/devcontainer-python-rust:latest",
 
     "runArgs": [
         "--cap-add=NET_ADMIN",
@@ -11,17 +11,22 @@
         "vscode": {
             "extensions": [
                 "anthropic.claude-code",
+                "eamodio.gitlens",
+                "fill-labs.dependi",
                 "ms-python.python",
                 "ms-python.vscode-pylance",
                 "charliermarsh.ruff",
                 "tamasfe.even-better-toml",
-                "eamodio.gitlens"
+                "rust-lang.rust-analyzer"
             ],
             "settings": {
-                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.defaultInterpreterPath": "/usr/bin/python",
                 "editor.formatOnSave": true,
                 "[python]": {
                     "editor.defaultFormatter": "charliermarsh.ruff"
+                },
+                "[rust]": {
+                    "editor.defaultFormatter": "rust-lang.rust-analyzer"
                 },
                 "terminal.integrated.defaultProfile.linux": "zsh",
                 "terminal.integrated.profiles.linux": {
@@ -41,7 +46,8 @@
 
     "mounts": [
         "source=devcontainer-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
-        "source=devcontainer-claude-config-${devcontainerId},target=/home/vscode/.claude,type=volume"
+        "source=devcontainer-claude-config-${devcontainerId},target=/home/vscode/.claude,type=volume",
+        "source=devcontainer-cargo-${devcontainerId},target=/home/vscode/.cargo/registry,type=volume"
     ],
 
     "containerEnv": {

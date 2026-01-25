@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/python:3.12
+FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
 ARG TZ
 ENV TZ="$TZ"
@@ -27,6 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     jq \
     nano \
     vim \
+    curl \
+    wget \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install git-delta for better diffs
@@ -34,10 +36,6 @@ RUN ARCH=$(dpkg --print-architecture) && \
     wget "https://github.com/dandavison/delta/releases/download/${GIT_DELTA_VERSION}/git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
     dpkg -i "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
     rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"
-
-# Install uv (fast Python package manager)
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin:${PATH}"
 
 # Install Node.js (required for Claude Code CLI)
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
@@ -74,12 +72,6 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 USER root
 RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
 
-# Common Python dev tools
-RUN uv pip install --system \
-    ruff \
-    pytest \
-    ipython
-
 # Set default shell to zsh
 ENV SHELL=/bin/zsh
 ENV EDITOR=nano
@@ -97,11 +89,8 @@ LABEL devcontainer.metadata='{ \
         "vscode": { \
             "extensions": [ \
                 "anthropic.claude-code", \
-                "ms-python.python", \
-                "ms-python.vscode-pylance", \
-                "charliermarsh.ruff", \
-                "tamasfe.even-better-toml", \
-                "eamodio.gitlens" \
+                "eamodio.gitlens", \
+                "fill-labs.dependi" \
             ] \
         } \
     } \

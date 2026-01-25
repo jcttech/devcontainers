@@ -1,0 +1,60 @@
+{
+    "name": "Rust + Claude Code",
+    "image": "ghcr.io/NAMESPACE/devcontainer-rust:latest",
+
+    "runArgs": [
+        "--cap-add=NET_ADMIN",
+        "--cap-add=NET_RAW"
+    ],
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "anthropic.claude-code",
+                "eamodio.gitlens",
+                "fill-labs.dependi",
+                "tamasfe.even-better-toml",
+                "rust-lang.rust-analyzer"
+            ],
+            "settings": {
+                "editor.formatOnSave": true,
+                "[rust]": {
+                    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+                },
+                "terminal.integrated.defaultProfile.linux": "zsh",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "bash",
+                        "icon": "terminal-bash"
+                    },
+                    "zsh": {
+                        "path": "zsh"
+                    }
+                }
+            }
+        }
+    },
+
+    "remoteUser": "vscode",
+
+    "mounts": [
+        "source=devcontainer-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
+        "source=devcontainer-claude-config-${devcontainerId},target=/home/vscode/.claude,type=volume",
+        "source=devcontainer-cargo-${devcontainerId},target=/home/vscode/.cargo/registry,type=volume"
+    ],
+
+    "containerEnv": {
+        "CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
+        "POWERLEVEL9K_DISABLE_GITSTATUS": "true"
+    },
+
+    "remoteEnv": {
+        "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}"
+    },
+
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=delegated",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+    "postStartCommand": "sudo /usr/local/bin/init-firewall.sh",
+    "waitFor": "postStartCommand"
+}

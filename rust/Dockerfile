@@ -1,9 +1,9 @@
-# Python + Rust devcontainer - extends Python
+# Rust devcontainer - extends base
 ARG REGISTRY=ghcr.io
 ARG NAMESPACE=jcttech
 ARG BASE_VERSION=latest
 
-FROM ${REGISTRY}/${NAMESPACE}/devcontainer-python:${BASE_VERSION}
+FROM ${REGISTRY}/${NAMESPACE}/devcontainer-base:${BASE_VERSION}
 
 USER root
 
@@ -23,7 +23,7 @@ RUN . "$HOME/.cargo/env" && \
     rustup component add rustfmt clippy && \
     cargo install cargo-watch cargo-edit
 
-# VS Code extensions for Python + Rust
+# VS Code extensions for Rust
 LABEL devcontainer.metadata='{ \
     "customizations": { \
         "vscode": { \
@@ -31,9 +31,6 @@ LABEL devcontainer.metadata='{ \
                 "anthropic.claude-code", \
                 "eamodio.gitlens", \
                 "fill-labs.dependi", \
-                "ms-python.python", \
-                "ms-python.vscode-pylance", \
-                "charliermarsh.ruff", \
                 "tamasfe.even-better-toml", \
                 "rust-lang.rust-analyzer" \
             ] \
