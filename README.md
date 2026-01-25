@@ -43,12 +43,12 @@ devcontainer exec --workspace-folder . zsh
 Pin to a specific version instead of `latest` for stability:
 
 ```json
-"image": "ghcr.io/jcttech/devcontainer-python:v1.0",
+"image": "ghcr.io/jcttech/devcontainer-python:1.0.0",
 ```
 
 Available tags:
 - `latest` - Most recent build
-- `v1.0`, `v1.1`, etc. - Specific releases
+- `1.0.0`, `1.1.0`, etc. - Semver releases
 
 ## Building Images
 
@@ -60,8 +60,8 @@ Images are built and pushed automatically:
 
 To release a new version:
 ```bash
-git tag v1.0
-git push origin v1.0
+git tag 1.0.0
+git push origin 1.0.0
 ```
 
 ### Manual (local)
