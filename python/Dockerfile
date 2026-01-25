@@ -17,21 +17,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && ln -sf /usr/bin/python3.12 /usr/bin/python3 \
     && ln -sf /usr/bin/python3 /usr/bin/python
 
-# Install uv (fast Python package manager)
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin:${PATH}"
-
-# Install uv for vscode user too
+# Install uv for vscode user
 USER vscode
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/home/vscode/.local/bin:${PATH}"
 
 # Common Python dev tools
-USER root
-RUN /root/.local/bin/uv pip install --system \
-    ruff \
-    pytest \
-    ipython
+RUN uv tool install ruff && \
+    uv tool install pytest && \
+    uv tool install ipython
 
 # VS Code extensions for Python
 LABEL devcontainer.metadata='{ \
@@ -49,5 +43,3 @@ LABEL devcontainer.metadata='{ \
         } \
     } \
 }'
-
-USER vscode
