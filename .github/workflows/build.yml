@@ -1,0 +1,98 @@
+name: Build and Push Images
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  NAMESPACE: jcttech
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            VERSION="${{ github.ref_name }}"
+          else
+            VERSION="latest"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build and push base
+        uses: docker/build-push-action@v5
+        with:
+          context: ./base
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:${{ steps.version.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push python
+        uses: docker/build-push-action@v5
+        with:
+          context: ./python
+          push: true
+          build-args: |
+            REGISTRY=${{ env.REGISTRY }}
+            NAMESPACE=${{ env.NAMESPACE }}
+            BASE_VERSION=${{ steps.version.outputs.version }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-python:${{ steps.version.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-python:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push rust
+        uses: docker/build-push-action@v5
+        with:
+          context: ./rust
+          push: true
+          build-args: |
+            REGISTRY=${{ env.REGISTRY }}
+            NAMESPACE=${{ env.NAMESPACE }}
+            BASE_VERSION=${{ steps.version.outputs.version }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust:${{ steps.version.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push python-rust
+        uses: docker/build-push-action@v5
+        with:
+          context: ./python-rust
+          push: true
+          build-args: |
+            REGISTRY=${{ env.REGISTRY }}
+            NAMESPACE=${{ env.NAMESPACE }}
+            BASE_VERSION=${{ steps.version.outputs.version }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-python-rust:${{ steps.version.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-python-rust:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

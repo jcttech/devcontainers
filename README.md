@@ -52,6 +52,20 @@ Available tags:
 
 ## Building Images
 
+### Automatic (GitHub Actions)
+
+Images are built and pushed automatically:
+- **On push to main** → tagged as `latest`
+- **On version tag** → tagged with version (e.g., `v1.0`)
+
+To release a new version:
+```bash
+git tag v1.0
+git push origin v1.0
+```
+
+### Manual (local)
+
 ```bash
 # Build all images locally
 NAMESPACE=jcttech VERSION=v1.0 ./build.sh
