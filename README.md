@@ -115,6 +115,12 @@ All templates include:
 - Visual Studio Code with Remote - Containers extension
 - Sufficient disk space for Docker images
 
+## Additional Resources
+
+- **[Template Selection Guide](TEMPLATE_GUIDE.md)**: Help choosing the right template for your project
+- **[Examples](EXAMPLES.md)**: Practical examples of using each template
+- **Template READMEs**: Each template has its own README with specific details
+
 ## Contributing
 
 To add a new template:
