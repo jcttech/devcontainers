@@ -55,8 +55,8 @@ Available tags:
 ### Automatic (GitHub Actions)
 
 Images are built and pushed automatically:
-- **On push to main** → tagged as `latest`
-- **On version tag** → tagged with version (e.g., `v1.0`)
+- **On version tag** → tagged with version (e.g., `1.0.0`) + `latest`
+- **Manual trigger** → optionally specify version, or defaults to `latest`
 
 To release a new version:
 ```bash
