@@ -79,7 +79,7 @@ RUN uv tool install ruff && \
 
 # Install Claude Code CLI via native installer
 USER root
-RUN curl -fsSL https://claude.ai/install.sh | sh -s -- ${CLAUDE_CODE_VERSION} && \
+RUN curl -fsSL https://claude.ai/install.sh | bash -s -- ${CLAUDE_CODE_VERSION} && \
     ln -sf /root/.claude/local/claude /usr/local/bin/claude
 
 # Add default Claude settings for MCP servers and plugins
