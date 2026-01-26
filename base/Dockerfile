@@ -83,13 +83,10 @@ RUN curl -fsSL https://claude.ai/install.sh | bash -s -- ${CLAUDE_CODE_VERSION}
 USER root
 RUN ln -sf /home/${USERNAME}/.claude/local/claude /usr/local/bin/claude
 
-# Add default Claude settings for MCP servers and plugins
+# Add default Claude settings for MCP servers
 RUN mkdir -p /etc/claude && \
     cat > /etc/claude/default-settings.json << 'EOF'
 {
-  "enabledPlugins": {
-    "claude-mem@thedotmack": true
-  },
   "mcpServers": {
     "github": {
       "type": "http",
