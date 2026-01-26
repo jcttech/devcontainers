@@ -1,6 +1,6 @@
 {
     "name": "Python + Claude Code",
-    "image": "ghcr.io/NAMESPACE/devcontainer-python:latest",
+    "image": "ghcr.io/NAMESPACE/devcontainer-base:latest",
 
     "runArgs": [
         "--cap-add=NET_ADMIN",
@@ -42,7 +42,8 @@
 
     "mounts": [
         "source=devcontainer-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
-        "source=claude-config-shared,target=/home/vscode/.claude,type=volume"
+        "source=claude-config-shared,target=/home/vscode/.claude,type=volume",
+        "source=claude-mem-shared,target=/home/vscode/.claude-mem,type=volume"
     ],
 
     "containerEnv": {
@@ -51,13 +52,14 @@
     },
 
     "remoteEnv": {
-        "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}"
+        "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${localEnv:GITHUB_PERSONAL_ACCESS_TOKEN}"
     },
 
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=delegated",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
-    "postCreateCommand": "uv sync 2>/dev/null || uv pip install -e '.[dev]' 2>/dev/null || true",
+    "postCreateCommand": "[ -f ~/.claude/settings.json ] || cp /etc/claude/default-settings.json ~/.claude/settings.json; uv sync 2>/dev/null || uv pip install -e '.[dev]' 2>/dev/null || true",
     "postStartCommand": "sudo /usr/local/bin/init-firewall.sh",
     "waitFor": "postStartCommand"
 }

@@ -23,7 +23,7 @@ RUN . "$HOME/.cargo/env" && \
     rustup component add rustfmt clippy && \
     cargo install cargo-watch cargo-edit
 
-# VS Code extensions for Rust
+# VS Code extensions for Rust (Python extensions inherited from base)
 LABEL devcontainer.metadata='{ \
     "customizations": { \
         "vscode": { \
@@ -31,6 +31,9 @@ LABEL devcontainer.metadata='{ \
                 "anthropic.claude-code", \
                 "eamodio.gitlens", \
                 "fill-labs.dependi", \
+                "ms-python.python", \
+                "ms-python.vscode-pylance", \
+                "charliermarsh.ruff", \
                 "tamasfe.even-better-toml", \
                 "rust-lang.rust-analyzer" \
             ] \

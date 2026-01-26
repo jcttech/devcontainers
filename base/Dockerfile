@@ -7,7 +7,7 @@ ARG CLAUDE_CODE_VERSION=latest
 ARG GIT_DELTA_VERSION=0.18.2
 ARG ZSH_IN_DOCKER_VERSION=1.2.0
 
-# Install basic development tools and iptables/ipset (from Claude Code official)
+# Install basic development tools, Python, and iptables/ipset
 RUN apt-get update && apt-get install -y --no-install-recommends \
     less \
     git \
@@ -29,7 +29,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim \
     curl \
     wget \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    python3.12 \
+    python3.12-venv \
+    python3.12-dev \
+    python3-pip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && ln -sf /usr/bin/python3.12 /usr/bin/python3 \
+    && ln -sf /usr/bin/python3 /usr/bin/python
 
 # Install git-delta for better diffs
 RUN ARCH=$(dpkg --print-architecture) && \
@@ -63,10 +69,42 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
     -x
 
+# Install uv and Python dev tools
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/home/${USERNAME}/.local/bin:${PATH}"
+RUN uv tool install ruff && \
+    uv tool install pytest && \
+    uv tool install ipython && \
+    uv tool install specify-cli --from git+https://github.com/jayctran/spec-kit.git
+
 # Install Claude Code CLI via native installer
 USER root
 RUN curl -fsSL https://claude.ai/install.sh | sh -s -- ${CLAUDE_CODE_VERSION} && \
     ln -sf /root/.claude/local/claude /usr/local/bin/claude
+
+# Add default Claude settings for MCP servers and plugins
+RUN mkdir -p /etc/claude && \
+    cat > /etc/claude/default-settings.json << 'EOF'
+{
+  "enabledPlugins": {
+    "claude-mem@thedotmack": true
+  },
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  },
+  "permissions": {
+    "allow": [
+      "mcp__github__*"
+    ]
+  }
+}
+EOF
 
 # Set default shell to zsh
 ENV SHELL=/bin/zsh
@@ -86,7 +124,11 @@ LABEL devcontainer.metadata='{ \
             "extensions": [ \
                 "anthropic.claude-code", \
                 "eamodio.gitlens", \
-                "fill-labs.dependi" \
+                "fill-labs.dependi", \
+                "ms-python.python", \
+                "ms-python.vscode-pylance", \
+                "charliermarsh.ruff", \
+                "tamasfe.even-better-toml" \
             ] \
         } \
     } \

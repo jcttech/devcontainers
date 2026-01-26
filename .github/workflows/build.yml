@@ -58,21 +58,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build and push python
-        uses: docker/build-push-action@v5
-        with:
-          context: ./python
-          push: true
-          build-args: |
-            REGISTRY=${{ env.REGISTRY }}
-            NAMESPACE=${{ env.NAMESPACE }}
-            BASE_VERSION=${{ steps.version.outputs.version }}
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-python:${{ steps.version.outputs.version }}
-            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-python:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
       - name: Build and push rust
         uses: docker/build-push-action@v5
         with:
@@ -85,20 +70,5 @@ jobs:
           tags: |
             ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust:${{ steps.version.outputs.version }}
             ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Build and push python-rust
-        uses: docker/build-push-action@v5
-        with:
-          context: ./python-rust
-          push: true
-          build-args: |
-            REGISTRY=${{ env.REGISTRY }}
-            NAMESPACE=${{ env.NAMESPACE }}
-            BASE_VERSION=${{ steps.version.outputs.version }}
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-python-rust:${{ steps.version.outputs.version }}
-            ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-python-rust:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max

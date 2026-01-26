@@ -1,5 +1,5 @@
 {
-    "name": "Rust + Claude Code",
+    "name": "Rust + Python + Claude Code",
     "image": "ghcr.io/NAMESPACE/devcontainer-rust:latest",
 
     "runArgs": [
@@ -13,11 +13,17 @@
                 "anthropic.claude-code",
                 "eamodio.gitlens",
                 "fill-labs.dependi",
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "charliermarsh.ruff",
                 "tamasfe.even-better-toml",
                 "rust-lang.rust-analyzer"
             ],
             "settings": {
                 "editor.formatOnSave": true,
+                "[python]": {
+                    "editor.defaultFormatter": "charliermarsh.ruff"
+                },
                 "[rust]": {
                     "editor.defaultFormatter": "rust-lang.rust-analyzer"
                 },
@@ -40,6 +46,7 @@
     "mounts": [
         "source=devcontainer-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
         "source=claude-config-shared,target=/home/vscode/.claude,type=volume",
+        "source=claude-mem-shared,target=/home/vscode/.claude-mem,type=volume",
         "source=devcontainer-cargo-${devcontainerId},target=/home/vscode/.cargo/registry,type=volume"
     ],
 
@@ -49,12 +56,14 @@
     },
 
     "remoteEnv": {
-        "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}"
+        "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${localEnv:GITHUB_PERSONAL_ACCESS_TOKEN}"
     },
 
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=delegated",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
+    "postCreateCommand": "[ -f ~/.claude/settings.json ] || cp /etc/claude/default-settings.json ~/.claude/settings.json",
     "postStartCommand": "sudo /usr/local/bin/init-firewall.sh",
     "waitFor": "postStartCommand"
 }
