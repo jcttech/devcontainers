@@ -54,7 +54,7 @@ RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhisto
 ENV DEVCONTAINER=true
 
 # Create workspace and config directories
-RUN mkdir -p /workspaces /home/${USERNAME}/.claude && \
+RUN mkdir -p /workspaces /home/${USERNAME}/.claude/skills /etc/claude-code/.claude/skills && \
     chown -R ${USERNAME}:${USERNAME} /workspaces /home/${USERNAME}/.claude
 
 WORKDIR /workspaces
