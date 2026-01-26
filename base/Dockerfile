@@ -37,11 +37,6 @@ RUN ARCH=$(dpkg --print-architecture) && \
     dpkg -i "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
     rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"
 
-# Install Node.js (required for Claude Code CLI)
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
 # Persist bash history
 ARG USERNAME=vscode
 RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
@@ -68,9 +63,10 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
     -x
 
-# Install Claude Code CLI via npm (official method)
+# Install Claude Code CLI via native installer
 USER root
-RUN npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}
+RUN curl -fsSL https://claude.ai/install.sh | sh -s -- ${CLAUDE_CODE_VERSION} && \
+    ln -sf /root/.claude/local/claude /usr/local/bin/claude
 
 # Set default shell to zsh
 ENV SHELL=/bin/zsh
