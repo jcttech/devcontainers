@@ -77,10 +77,10 @@ RUN uv tool install ruff && \
     uv tool install ipython && \
     uv tool install specify-cli --from git+https://github.com/jayctran/spec-kit.git
 
-# Install Claude Code CLI via native installer
+# Install Claude Code CLI via native installer (as vscode user)
+RUN curl -fsSL https://claude.ai/install.sh | bash -s -- ${CLAUDE_CODE_VERSION}
 USER root
-RUN curl -fsSL https://claude.ai/install.sh | bash -s -- ${CLAUDE_CODE_VERSION} && \
-    ln -sf /root/.claude/local/claude /usr/local/bin/claude
+RUN ln -sf /home/${USERNAME}/.claude/local/claude /usr/local/bin/claude
 
 # Add default Claude settings for MCP servers and plugins
 RUN mkdir -p /etc/claude && \
