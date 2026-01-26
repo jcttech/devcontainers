@@ -67,6 +67,7 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -a "source /usr/share/doc/fzf/examples/key-bindings.zsh 2>/dev/null || true" \
     -a "source /usr/share/doc/fzf/examples/completion.zsh 2>/dev/null || true" \
     -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
+    -a "[ -f ~/.claude/settings.json ] || cp /etc/claude/default-settings.json ~/.claude/settings.json 2>/dev/null || true" \
     -x
 
 # Install uv and Python dev tools
