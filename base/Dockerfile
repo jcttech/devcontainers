@@ -68,8 +68,8 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -a "source /usr/share/doc/fzf/examples/completion.zsh 2>/dev/null || true" \
     -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
     -a "[ -f ~/.claude/settings.json ] || cp /etc/claude/default-settings.json ~/.claude/settings.json 2>/dev/null || true" \
-    -a "[ -L ~/.claude.json ] || ([ -f ~/.claude/mcp-config.json ] || echo '{}' > ~/.claude/mcp-config.json; ln -sf ~/.claude/mcp-config.json ~/.claude.json) 2>/dev/null || true" \
-    -a "grep -q '\"github\"' ~/.claude.json 2>/dev/null || claude mcp add --transport http github https://api.githubcopilot.com/mcp/ 2>/dev/null || true" \
+    -a "[ -L ~/.claude.json ] || ln -sf ~/.claude/mcp-config.json ~/.claude.json 2>/dev/null || true" \
+    -a "[ -f ~/.claude/mcp-config.json ] || cp /etc/claude/default-mcp.json ~/.claude/mcp-config.json 2>/dev/null || true" \
     -x
 
 # Install uv and Python dev tools
@@ -89,7 +89,7 @@ RUN curl -fsSL https://claude.ai/install.sh | bash -s -- ${CLAUDE_CODE_VERSION}
 USER root
 RUN ln -sf /home/${USERNAME}/.claude/local/claude /usr/local/bin/claude
 
-# Add default Claude settings
+# Add default Claude settings and MCP config
 RUN mkdir -p /etc/claude && \
     cat > /etc/claude/default-settings.json << 'EOF'
 {
@@ -97,6 +97,16 @@ RUN mkdir -p /etc/claude && \
     "allow": [
       "mcp__github__*"
     ]
+  }
+}
+EOF
+RUN cat > /etc/claude/default-mcp.json << 'EOF'
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    }
   }
 }
 EOF
