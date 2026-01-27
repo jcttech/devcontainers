@@ -73,8 +73,7 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
     -a "source /usr/share/doc/fzf/examples/completion.zsh 2>/dev/null || true" \
     -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
     -a "[ -f ~/.claude/settings.json ] || cp /etc/claude/default-settings.json ~/.claude/settings.json >/dev/null 2>&1 || true" \
-    -a "[ -L ~/.claude.json ] || ln -sf ~/.claude/mcp-config.json ~/.claude.json >/dev/null 2>&1 || true" \
-    -a "[ -f ~/.claude/mcp-config.json ] || cp /etc/claude/default-mcp.json ~/.claude/mcp-config.json >/dev/null 2>&1 || true" \
+    -a "[ -f ~/.claude/.claude.json ] || cp /etc/claude/default-mcp.json ~/.claude/.claude.json >/dev/null 2>&1 || true" \
     -x
 
 # Install uv and Python dev tools
