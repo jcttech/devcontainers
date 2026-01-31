@@ -7,7 +7,7 @@ ARG CLAUDE_CODE_VERSION=latest
 ARG GIT_DELTA_VERSION=0.18.2
 ARG ZSH_IN_DOCKER_VERSION=1.2.0
 
-# Install basic development tools, Python, and iptables/ipset
+# Install basic development tools and Python
 RUN apt-get update && apt-get install -y --no-install-recommends \
     less \
     git \
@@ -19,11 +19,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     unzip \
     gnupg2 \
     gh \
-    iptables \
-    ipset \
-    iproute2 \
-    dnsutils \
-    aggregate \
     jq \
     nano \
     vim \
@@ -104,16 +99,13 @@ RUN mkdir -p /etc/claude && \
 }
 EOF
 
+# Copy Claude network access instructions
+COPY CLAUDE.md /CLAUDE.md
+
 # Set default shell to zsh
 ENV SHELL=/bin/zsh
 ENV EDITOR=nano
 ENV VISUAL=nano
-
-# Copy firewall script
-COPY init-firewall.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/init-firewall.sh && \
-    echo "${USERNAME} ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/${USERNAME}-firewall && \
-    chmod 0440 /etc/sudoers.d/${USERNAME}-firewall
 
 # VS Code extensions
 LABEL devcontainer.metadata='{ \

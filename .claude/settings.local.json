@@ -8,7 +8,12 @@
       "Bash(git commit:*)",
       "Bash(git push)",
       "Bash(git tag:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "WebFetch(domain:claude.ai)",
+      "WebFetch(domain:storage.googleapis.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.anthropic.com)"
     ]
   }
 }

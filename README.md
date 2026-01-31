@@ -93,7 +93,6 @@ base (Claude Code + tools)
 - zsh with powerlevel10k
 - fzf, git-delta, gh CLI
 - nano, vim, jq
-- Network firewall (restricts to allowed domains)
 
 ### Python Image
 - Python 3.12
@@ -104,21 +103,6 @@ base (Claude Code + tools)
 - Rust toolchain (rustup)
 - rustfmt, clippy
 - cargo-watch, cargo-edit
-
-## Network Firewall
-
-The images include a firewall that restricts network access to:
-- GitHub (api, web, git)
-- PyPI (pypi.org, files.pythonhosted.org)
-- crates.io
-- npm registry
-- Anthropic API
-- VS Code marketplace
-
-Run manually if needed:
-```bash
-sudo /usr/local/bin/init-firewall.sh
-```
 
 ## Environment Variables
 

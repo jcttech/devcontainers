@@ -2,11 +2,6 @@
     "name": "Rust + Python + Claude Code",
     "image": "ghcr.io/NAMESPACE/devcontainer-rust:latest",
 
-    "runArgs": [
-        "--cap-add=NET_ADMIN",
-        "--cap-add=NET_RAW"
-    ],
-
     "customizations": {
         "vscode": {
             "extensions": [
@@ -61,8 +56,5 @@
     },
 
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=delegated",
-    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-
-    "postStartCommand": "sudo /usr/local/bin/init-firewall.sh",
-    "waitFor": "postStartCommand"
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
 }

@@ -2,11 +2,6 @@
     "name": "Python + Claude Code",
     "image": "ghcr.io/NAMESPACE/devcontainer-base:latest",
 
-    "runArgs": [
-        "--cap-add=NET_ADMIN",
-        "--cap-add=NET_RAW"
-    ],
-
     "customizations": {
         "vscode": {
             "extensions": [
@@ -59,7 +54,5 @@
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=delegated",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
-    "postCreateCommand": "uv sync 2>/dev/null || uv pip install -e '.[dev]' 2>/dev/null || true",
-    "postStartCommand": "sudo /usr/local/bin/init-firewall.sh",
-    "waitFor": "postStartCommand"
+    "postCreateCommand": "uv sync 2>/dev/null || uv pip install -e '.[dev]' 2>/dev/null || true"
 }
