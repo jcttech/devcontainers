@@ -23,6 +23,25 @@ RUN . "$HOME/.cargo/env" && \
     rustup component add rustfmt clippy && \
     cargo install cargo-watch cargo-edit
 
+# Install sccache for shared compilation caching
+USER root
+ARG SCCACHE_VERSION=0.13.0
+RUN ARCH=$(dpkg --print-architecture) && \
+    case ${ARCH} in \
+        amd64) SCCACHE_ARCH="x86_64-unknown-linux-musl" ;; \
+        arm64) SCCACHE_ARCH="aarch64-unknown-linux-musl" ;; \
+    esac && \
+    wget "https://github.com/mozilla/sccache/releases/download/v${SCCACHE_VERSION}/sccache-v${SCCACHE_VERSION}-${SCCACHE_ARCH}.tar.gz" && \
+    tar xzf "sccache-v${SCCACHE_VERSION}-${SCCACHE_ARCH}.tar.gz" && \
+    mv "sccache-v${SCCACHE_VERSION}-${SCCACHE_ARCH}/sccache" /usr/local/bin/sccache && \
+    chmod +x /usr/local/bin/sccache && \
+    rm -rf "sccache-v${SCCACHE_VERSION}-${SCCACHE_ARCH}" "sccache-v${SCCACHE_VERSION}-${SCCACHE_ARCH}.tar.gz"
+USER vscode
+
+ENV RUSTC_WRAPPER="/usr/local/bin/sccache"
+ENV SCCACHE_DIR="/home/vscode/.sccache"
+ENV SCCACHE_CACHE_SIZE="5G"
+
 # VS Code extensions for Rust (Python extensions inherited from base)
 LABEL devcontainer.metadata='{ \
     "customizations": { \
