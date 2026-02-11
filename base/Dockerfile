@@ -4,6 +4,7 @@ ARG TZ
 ENV TZ="$TZ"
 
 ARG CLAUDE_CODE_VERSION=latest
+ARG GH_VERSION=2.86.0
 ARG GIT_DELTA_VERSION=0.18.2
 ARG ZSH_IN_DOCKER_VERSION=1.2.0
 
@@ -18,7 +19,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     man-db \
     unzip \
     gnupg2 \
-    gh \
     jq \
     nano \
     vim \
@@ -31,6 +31,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
     && ln -sf /usr/bin/python3.12 /usr/bin/python3 \
     && ln -sf /usr/bin/python3 /usr/bin/python
+
+# Install GitHub CLI from official release
+RUN ARCH=$(dpkg --print-architecture) && \
+    wget "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH}.deb" && \
+    dpkg -i "gh_${GH_VERSION}_linux_${ARCH}.deb" && \
+    rm "gh_${GH_VERSION}_linux_${ARCH}.deb"
 
 # Install git-delta for better diffs
 RUN ARCH=$(dpkg --print-architecture) && \
