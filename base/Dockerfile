@@ -32,6 +32,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && ln -sf /usr/bin/python3.12 /usr/bin/python3 \
     && ln -sf /usr/bin/python3 /usr/bin/python
 
+# Install Podman and Docker compatibility tools
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    podman \
+    podman-docker \
+    uidmap \
+    slirp4netns \
+    fuse-overlayfs \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Install GitHub CLI from official release
 RUN ARCH=$(dpkg --print-architecture) && \
     wget "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH}.deb" && \
@@ -107,6 +116,11 @@ EOF
 
 # Copy Claude network access instructions
 COPY CLAUDE.md /CLAUDE.md
+
+# Install Podman socket startup script
+COPY start-podman-socket.sh /usr/local/bin/start-podman-socket.sh
+RUN chmod +x /usr/local/bin/start-podman-socket.sh
+ENV DOCKER_HOST=unix:///var/run/docker.sock
 
 # Set default shell to zsh
 ENV SHELL=/bin/zsh
