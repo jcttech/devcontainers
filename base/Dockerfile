@@ -102,18 +102,6 @@ RUN curl -fsSL https://claude.ai/install.sh | bash -s -- ${CLAUDE_CODE_VERSION}
 USER root
 RUN ln -sf /home/${USERNAME}/.claude/local/claude /usr/local/bin/claude
 
-# Add default Claude settings
-RUN mkdir -p /etc/claude && \
-    cat > /etc/claude/default-settings.json << 'EOF'
-{
-  "permissions": {
-    "allow": [
-      "mcp__github__*"
-    ]
-  }
-}
-EOF
-
 # Copy Claude network access instructions
 COPY CLAUDE.md /CLAUDE.md
 
