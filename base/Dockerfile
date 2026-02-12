@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Kaniko for daemonless container image builds
 COPY --from=gcr.io/kaniko-project/executor:latest /kaniko /kaniko
+RUN chmod -R 777 /kaniko
 ENV PATH="/kaniko:${PATH}"
 
 # Install GitHub CLI from official release
