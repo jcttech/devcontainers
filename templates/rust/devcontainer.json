@@ -58,7 +58,5 @@
     },
 
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=delegated",
-    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-
-    "postStartCommand": "sudo /usr/local/bin/start-podman-socket.sh"
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
 }
