@@ -41,6 +41,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fuse-overlayfs \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Set up subuid and subgid for vscode user to allow Podman to run without root
+RUN echo "vscode:100000:65536" >> /etc/subuid && \                                                                                                                          
+    echo "vscode:100000:65536" >> /etc/subgid
+
 # Install GitHub CLI from official release
 RUN ARCH=$(dpkg --print-architecture) && \
     wget "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH}.deb" && \
