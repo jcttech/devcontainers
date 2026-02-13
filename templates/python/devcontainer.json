@@ -54,5 +54,6 @@
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=delegated",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
-    "postCreateCommand": "uv sync 2>/dev/null || uv pip install -e '.[dev]' 2>/dev/null || true"
+    "postCreateCommand": "uv sync 2>/dev/null || uv pip install -e '.[dev]' 2>/dev/null || true",
+    "postStartCommand": "sudo /usr/local/bin/start-podman-socket.sh"
 }
