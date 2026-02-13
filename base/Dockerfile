@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && ln -sf /usr/bin/python3 /usr/bin/python
 
 # Install Kaniko for daemonless container image builds
-COPY --from=gcr.io/kaniko-project/executor:latest /kaniko /kaniko
+COPY --from=gcr.io/kaniko-project/executor:latest --chown=root:root /kaniko /kaniko
 RUN chmod -R 777 /kaniko
 ENV PATH="/kaniko:${PATH}"
 
