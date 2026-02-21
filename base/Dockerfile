@@ -30,14 +30,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-pip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install agent worker and gRPC dependencies for claude-session-manager
-ARG GITHUB_TOKEN
-ARG AGENT_WORKER_VERSION=2.0.0
-RUN pip install --break-system-packages \
-    grpcio>=1.60.0 \
-    protobuf>=4.25.0 \
-    "https://x-access-token:${GITHUB_TOKEN}@github.com/jcttech/claude-session-manager/releases/download/agent-worker/v${AGENT_WORKER_VERSION}/agent_worker-${AGENT_WORKER_VERSION}-py3-none-any.whl"
-
 # Install Podman and Docker compatibility tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     podman \
@@ -52,6 +44,19 @@ RUN ARCH=$(dpkg --print-architecture) && \
     wget "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH}.deb" && \
     dpkg -i "gh_${GH_VERSION}_linux_${ARCH}.deb" && \
     rm "gh_${GH_VERSION}_linux_${ARCH}.deb"
+
+# Install agent worker and gRPC dependencies for claude-session-manager
+ARG GITHUB_TOKEN
+ARG AGENT_WORKER_VERSION=2.0.0
+RUN GH_TOKEN=${GITHUB_TOKEN} gh release download "agent-worker/v${AGENT_WORKER_VERSION}" \
+        --repo jcttech/claude-session-manager \
+        --pattern "*.whl" \
+        --dir /tmp \
+    && pip install --break-system-packages \
+        grpcio>=1.60.0 \
+        protobuf>=4.25.0 \
+        /tmp/agent_worker-${AGENT_WORKER_VERSION}-py3-none-any.whl \
+    && rm /tmp/agent_worker-${AGENT_WORKER_VERSION}-py3-none-any.whl
 
 # Install git-delta for better diffs
 RUN ARCH=$(dpkg --print-architecture) && \

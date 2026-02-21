@@ -6,8 +6,8 @@ Pre-built devcontainer images with Claude Code CLI, common development tools, an
 
 | Image | Description |
 |-------|-------------|
-| `ghcr.io/jcttech/devcontainer-base` | Claude Code CLI + common tools (zsh, fzf, git-delta, gh) |
-| `ghcr.io/jcttech/devcontainer-python` | Base + Python 3.12 + uv |
+| `ghcr.io/jcttech/devcontainer-base` | Claude Code CLI + agent worker + common tools (zsh, fzf, git-delta, gh) |
+| `ghcr.io/jcttech/devcontainer-python` | Base + Python 3.13 + uv |
 | `ghcr.io/jcttech/devcontainer-rust` | Base + Rust toolchain |
 | `ghcr.io/jcttech/devcontainer-python-rust` | Python + Rust combined |
 
@@ -66,9 +66,11 @@ git push origin 1.0.0
 
 ### Manual (local)
 
+The base image requires a `GITHUB_TOKEN` to download the agent-worker package from the private `claude-session-manager` repo:
+
 ```bash
 # Build all images locally
-NAMESPACE=jcttech VERSION=v1.0 ./build.sh
+GITHUB_TOKEN=ghp_xxx NAMESPACE=jcttech VERSION=v1.0 ./build.sh
 
 # Push to GitHub Container Registry
 docker push ghcr.io/jcttech/devcontainer-base --all-tags
@@ -80,8 +82,8 @@ docker push ghcr.io/jcttech/devcontainer-python-rust --all-tags
 ## Image Hierarchy
 
 ```
-base (Claude Code + tools)
-├── python (+ Python 3.12 + uv)
+base (Debian Trixie + Claude Code + agent worker + tools)
+├── python (+ Python 3.13 + uv)
 │   └── python-rust (+ Rust)
 └── rust (+ Rust)
 ```
@@ -89,13 +91,15 @@ base (Claude Code + tools)
 ## What's Included
 
 ### Base Image
+- Debian Trixie (Python 3.13)
 - Claude Code CLI
+- Agent worker (gRPC service on port 50051 for claude-session-manager)
 - zsh with powerlevel10k
 - fzf, git-delta, gh CLI
 - nano, vim, jq
 
 ### Python Image
-- Python 3.12
+- Python 3.13
 - uv (fast package manager)
 - ruff, pytest, ipython
 
