@@ -19,7 +19,6 @@ echo "Building base image..."
 docker build \
     --build-arg TZ="${TZ:-UTC}" \
     --build-arg CLAUDE_CODE_VERSION="${CLAUDE_CODE_VERSION:-latest}" \
-    --build-arg GITHUB_TOKEN="${GITHUB_TOKEN}" \
     -t "${REGISTRY}/${NAMESPACE}/devcontainer-base:${VERSION}" \
     -t "${REGISTRY}/${NAMESPACE}/devcontainer-base:latest" \
     ./base

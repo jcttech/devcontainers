@@ -42,8 +42,7 @@ jobs:
 
       - name: Build and push base
         run: |
-          podman build --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
-                       -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:${{ steps.version.outputs.version }} \
+          podman build -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:${{ steps.version.outputs.version }} \
                        -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:latest \
                        ./base
           podman push ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:${{ steps.version.outputs.version }}

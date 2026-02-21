@@ -66,11 +66,9 @@ git push origin 1.0.0
 
 ### Manual (local)
 
-The base image requires a `GITHUB_TOKEN` to download the agent-worker package from the private `claude-session-manager` repo:
-
 ```bash
 # Build all images locally
-GITHUB_TOKEN=ghp_xxx NAMESPACE=jcttech VERSION=v1.0 ./build.sh
+NAMESPACE=jcttech VERSION=v1.0 ./build.sh
 
 # Push to GitHub Container Registry
 docker push ghcr.io/jcttech/devcontainer-base --all-tags

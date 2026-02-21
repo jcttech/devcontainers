@@ -46,17 +46,11 @@ RUN ARCH=$(dpkg --print-architecture) && \
     rm "gh_${GH_VERSION}_linux_${ARCH}.deb"
 
 # Install agent worker and gRPC dependencies for claude-session-manager
-ARG GITHUB_TOKEN
 ARG AGENT_WORKER_VERSION=2.0.0
-RUN GH_TOKEN=${GITHUB_TOKEN} gh release download "agent-worker/v${AGENT_WORKER_VERSION}" \
-        --repo jcttech/claude-session-manager \
-        --pattern "*.whl" \
-        --dir /tmp \
-    && pip install --break-system-packages \
-        grpcio>=1.60.0 \
-        protobuf>=4.25.0 \
-        /tmp/agent_worker-${AGENT_WORKER_VERSION}-py3-none-any.whl \
-    && rm /tmp/agent_worker-${AGENT_WORKER_VERSION}-py3-none-any.whl
+RUN pip install --break-system-packages \
+    grpcio>=1.60.0 \
+    protobuf>=4.25.0 \
+    https://github.com/jcttech/claude-session-manager/releases/download/agent-worker/v${AGENT_WORKER_VERSION}/agent_worker-${AGENT_WORKER_VERSION}-py3-none-any.whl
 
 # Install git-delta for better diffs
 RUN ARCH=$(dpkg --print-architecture) && \
@@ -127,6 +121,8 @@ ENV EDITOR=nano
 ENV VISUAL=nano
 
 # VS Code extensions
+EXPOSE 50051
+
 LABEL devcontainer.metadata='{ \
     "customizations": { \
         "vscode": { \
@@ -140,7 +136,8 @@ LABEL devcontainer.metadata='{ \
                 "tamasfe.even-better-toml" \
             ] \
         } \
-    } \
+    }, \
+    "postStartCommand": "sudo /usr/local/bin/start-podman-socket.sh && python3 -m agent_worker --port 50051 &" \
 }'
 
 USER ${USERNAME}

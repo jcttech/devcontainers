@@ -54,8 +54,5 @@
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=delegated",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
-    "postCreateCommand": "uv sync 2>/dev/null || uv pip install -e '.[dev]' 2>/dev/null || true",
-    "forwardPorts": [50051],
-
-    "postStartCommand": "sudo /usr/local/bin/start-podman-socket.sh && python -m agent_worker.server --port 50051 &"
+    "postCreateCommand": "uv sync 2>/dev/null || uv pip install -e '.[dev]' 2>/dev/null || true"
 }

@@ -58,9 +58,5 @@
     },
 
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=delegated",
-    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-
-    "forwardPorts": [50051],
-
-    "postStartCommand": "sudo /usr/local/bin/start-podman-socket.sh && python -m agent_worker.server --port 50051 &"
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
 }
