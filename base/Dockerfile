@@ -31,11 +31,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install agent worker and gRPC dependencies for claude-session-manager
+ARG GITHUB_TOKEN
 ARG AGENT_WORKER_VERSION=2.0.0
 RUN pip install --break-system-packages \
     grpcio>=1.60.0 \
     protobuf>=4.25.0 \
-    https://github.com/jcttech/claude-session-manager/releases/download/agent-worker/v${AGENT_WORKER_VERSION}/agent_worker-${AGENT_WORKER_VERSION}-py3-none-any.whl
+    "https://x-access-token:${GITHUB_TOKEN}@github.com/jcttech/claude-session-manager/releases/download/agent-worker/v${AGENT_WORKER_VERSION}/agent_worker-${AGENT_WORKER_VERSION}-py3-none-any.whl"
 
 # Install Podman and Docker compatibility tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
