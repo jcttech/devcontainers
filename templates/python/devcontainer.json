@@ -55,5 +55,7 @@
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
     "postCreateCommand": "uv sync 2>/dev/null || uv pip install -e '.[dev]' 2>/dev/null || true",
-    "postStartCommand": "sudo /usr/local/bin/start-podman-socket.sh"
+    "forwardPorts": [50051],
+
+    "postStartCommand": "sudo /usr/local/bin/start-podman-socket.sh && python -m agent_worker.server --port 50051 &"
 }

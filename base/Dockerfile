@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/base:ubuntu
+FROM mcr.microsoft.com/devcontainers/base:trixie
 
 ARG TZ
 ENV TZ="$TZ"
@@ -24,13 +24,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim \
     curl \
     wget \
-    python3.12 \
-    python3.12-venv \
-    python3.12-dev \
+    python3 \
+    python3-venv \
+    python3-dev \
     python3-pip \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* \
-    && ln -sf /usr/bin/python3.12 /usr/bin/python3 \
-    && ln -sf /usr/bin/python3 /usr/bin/python
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install agent worker and gRPC dependencies for claude-session-manager
+ARG AGENT_WORKER_VERSION=2.0.0
+RUN pip install --break-system-packages \
+    grpcio>=1.60.0 \
+    protobuf>=4.25.0 \
+    https://github.com/jcttech/claude-session-manager/releases/download/agent-worker/v${AGENT_WORKER_VERSION}/agent_worker-${AGENT_WORKER_VERSION}-py3-none-any.whl
 
 # Install Podman and Docker compatibility tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
