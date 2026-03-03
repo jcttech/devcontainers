@@ -9,6 +9,30 @@ on:
         description: 'Version tag (e.g., 1.0.0). Leave empty for "latest"'
         required: false
         default: ''
+      tz:
+        description: 'Timezone (TZ)'
+        required: false
+        default: ''
+      claude_code_version:
+        description: 'Claude Code version'
+        required: false
+        default: 'latest'
+      gh_version:
+        description: 'GitHub CLI version'
+        required: false
+        default: '2.86.0'
+      git_delta_version:
+        description: 'git-delta version'
+        required: false
+        default: '0.18.2'
+      zsh_in_docker_version:
+        description: 'zsh-in-docker version'
+        required: false
+        default: '1.2.0'
+      agent_worker_version:
+        description: 'agent-worker version'
+        required: false
+        default: '2.1.0'
 
 env:
   REGISTRY: ghcr.io
@@ -42,7 +66,14 @@ jobs:
 
       - name: Build and push base
         run: |
-          podman build -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:${{ steps.version.outputs.version }} \
+          podman build \
+                       --build-arg TZ=${{ inputs.tz }} \
+                       --build-arg CLAUDE_CODE_VERSION=${{ inputs.claude_code_version }} \
+                       --build-arg GH_VERSION=${{ inputs.gh_version }} \
+                       --build-arg GIT_DELTA_VERSION=${{ inputs.git_delta_version }} \
+                       --build-arg ZSH_IN_DOCKER_VERSION=${{ inputs.zsh_in_docker_version }} \
+                       --build-arg AGENT_WORKER_VERSION=${{ inputs.agent_worker_version }} \
+                       -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:${{ steps.version.outputs.version }} \
                        -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:latest \
                        ./base
           podman push ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:${{ steps.version.outputs.version }}

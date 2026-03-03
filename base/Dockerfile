@@ -46,7 +46,7 @@ RUN ARCH=$(dpkg --print-architecture) && \
     rm "gh_${GH_VERSION}_linux_${ARCH}.deb"
 
 # Install agent worker and gRPC dependencies for claude-session-manager
-ARG AGENT_WORKER_VERSION=2.0.0
+ARG AGENT_WORKER_VERSION=2.1.0
 RUN pip install --break-system-packages \
     grpcio>=1.60.0 \
     protobuf>=4.25.0 \
