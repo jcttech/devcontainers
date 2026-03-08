@@ -95,8 +95,7 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/home/${USERNAME}/.local/bin:${PATH}"
 RUN uv tool install ruff && \
     uv tool install pytest && \
-    uv tool install ipython && \
-    uv tool install specify-cli --from git+https://github.com/jayctran/spec-kit.git
+    uv tool install ipython
 
 # Install bun (required for claude-mem plugin)
 RUN curl -fsSL https://bun.sh/install | bash
