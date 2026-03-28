@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config \
     libssl-dev \
     protobuf-compiler \
+    libclang-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Rust for vscode user
