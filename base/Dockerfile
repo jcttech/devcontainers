@@ -4,9 +4,12 @@ ARG TZ
 ENV TZ="$TZ"
 
 ARG CLAUDE_CODE_VERSION=latest
-ARG GH_VERSION=2.86.0
-ARG GIT_DELTA_VERSION=0.18.2
-ARG ZSH_IN_DOCKER_VERSION=1.2.0
+ARG GH_VERSION=2.90.0
+ARG GIT_DELTA_VERSION=0.19.2
+ARG ZSH_IN_DOCKER_VERSION=1.2.1
+
+# Skip dubious ownership firing
+RUN git config --system --add safe.directory '*'
 
 # Install basic development tools and Python
 RUN apt-get update && apt-get install -y --no-install-recommends \
