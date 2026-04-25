@@ -38,7 +38,8 @@
     "mounts": [
         "source=devcontainer-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
         "source=claude-config-shared,target=/home/vscode/.claude,type=volume",
-        "source=claude-mem-shared,target=/home/vscode/.claude-mem,type=volume"
+        "source=uv-cache-shared,target=/home/vscode/.cache/uv,type=volume",
+        "source=/usr/local/share/ca-certificates/,target=/usr/local/share/ca-certificates/,type=bind"
     ],
 
     "containerEnv": {
@@ -56,5 +57,5 @@
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=delegated",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
-    "postCreateCommand": "uv sync 2>/dev/null || uv pip install -e '.[dev]' 2>/dev/null || true"
+    "postCreateCommand": "sudo update-ca-certificates && (uv sync 2>/dev/null || uv pip install -e '.[dev]' 2>/dev/null || true)"
 }
