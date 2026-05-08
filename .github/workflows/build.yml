@@ -20,19 +20,19 @@ on:
       gh_version:
         description: 'GitHub CLI version'
         required: false
-        default: '2.86.0'
+        default: '2.92.0'
       git_delta_version:
         description: 'git-delta version'
         required: false
-        default: '0.18.2'
+        default: '0.19.2'
       zsh_in_docker_version:
         description: 'zsh-in-docker version'
         required: false
-        default: '1.2.0'
+        default: '1.2.1'
       agent_worker_version:
         description: 'agent-worker version'
         required: false
-        default: '2.1.0'
+        default: '3.0.0'
 
 env:
   REGISTRY: ghcr.io
