@@ -1,0 +1,70 @@
+{
+    "name": "Rust + Leptos + Claude Code",
+    "image": "ghcr.io/jcttech/devcontainer-rust-leptos:latest",
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "anthropic.claude-code",
+                "eamodio.gitlens",
+                "fill-labs.dependi",
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "charliermarsh.ruff",
+                "tamasfe.even-better-toml",
+                "rust-lang.rust-analyzer",
+                "bradlc.vscode-tailwindcss",
+                "leptos-community.leptos"
+            ],
+            "settings": {
+                "editor.formatOnSave": true,
+                "[python]": {
+                    "editor.defaultFormatter": "charliermarsh.ruff"
+                },
+                "[rust]": {
+                    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+                },
+                "rust-analyzer.cargo.targetDir": true,
+                "rust-analyzer.check.allTargets": true,
+                "terminal.integrated.defaultProfile.linux": "zsh",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "bash",
+                        "icon": "terminal-bash"
+                    },
+                    "zsh": {
+                        "path": "zsh"
+                    }
+                }
+            }
+        }
+    },
+
+    "remoteUser": "vscode",
+
+    "mounts": [
+        "source=devcontainer-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
+        "source=claude-config-shared,target=/home/vscode/.claude,type=volume",
+        "source=cargo-registry-shared,target=/home/vscode/.cargo/registry,type=volume",
+        "source=sccache-cache-shared,target=/home/vscode/.sccache,type=volume",
+        "source=/usr/local/share/ca-certificates/,target=/usr/local/share/ca-certificates/,type=bind"
+    ],
+
+    "containerEnv": {
+        "CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
+        "POWERLEVEL9K_DISABLE_GITSTATUS": "true",
+        "CARGO_TARGET_DIR": "/home/vscode/target"
+    },
+
+    "remoteEnv": {
+        "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
+        "GH_TOKEN": "${localEnv:GH_TOKEN}",
+        "MEMBANK_URL": "${localEnv:MEMBANK_URL}",
+        "MEMBANK_TOKEN": "${localEnv:MEMBANK_TOKEN}"
+    },
+
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=delegated",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+    "postCreateCommand": "sudo update-ca-certificates"
+}
