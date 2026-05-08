@@ -10,6 +10,7 @@ Pre-built devcontainer images with Claude Code CLI, common development tools, an
 | `ghcr.io/jcttech/devcontainer-python` | Base + Python 3.13 + uv |
 | `ghcr.io/jcttech/devcontainer-rust` | Base + Rust toolchain |
 | `ghcr.io/jcttech/devcontainer-python-rust` | Python + Rust combined |
+| `ghcr.io/jcttech/devcontainer-rust-leptos` | Rust + WASM (cargo-leptos, wasm-bindgen, wasm-opt) + postgresql-client + jq |
 
 ## Usage
 
@@ -75,6 +76,7 @@ docker push ghcr.io/jcttech/devcontainer-base --all-tags
 docker push ghcr.io/jcttech/devcontainer-python --all-tags
 docker push ghcr.io/jcttech/devcontainer-rust --all-tags
 docker push ghcr.io/jcttech/devcontainer-python-rust --all-tags
+docker push ghcr.io/jcttech/devcontainer-rust-leptos --all-tags
 ```
 
 ## Image Hierarchy
@@ -84,6 +86,7 @@ base (Debian Trixie + Claude Code + agent worker + tools)
 ├── python (+ Python 3.13 + uv)
 │   └── python-rust (+ Rust)
 └── rust (+ Rust)
+    └── rust-leptos (+ WASM toolchain + postgresql-client + jq)
 ```
 
 ## What's Included
@@ -105,6 +108,18 @@ base (Debian Trixie + Claude Code + agent worker + tools)
 - Rust toolchain (rustup)
 - rustfmt, clippy
 - cargo-watch, cargo-edit
+
+### Rust + Leptos Image
+- Everything in the Rust image, plus:
+- `wasm32-unknown-unknown` rustup target
+- `cargo-leptos` (Leptos SSR + hydrate orchestrator)
+- `wasm-bindgen-cli` (pinned via the `WASM_BINDGEN_VERSION` build arg, default `0.2.108`)
+- `wasm-opt` (binaryen, pinned via the `BINARYEN_VERSION` build arg, default `version_119`)
+- `postgresql-client`, `jq`
+
+To bump the WASM toolchain: edit the `WASM_BINDGEN_VERSION` / `BINARYEN_VERSION`
+ARGs in `rust-leptos/Dockerfile`, merge to `main`, and `:latest` republishes
+to GHCR. Downstream consumers pick up the new versions on next pull.
 
 ## Environment Variables
 

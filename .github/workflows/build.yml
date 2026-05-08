@@ -89,3 +89,40 @@ jobs:
                        ./rust
           podman push ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust:${{ steps.version.outputs.version }}
           podman push ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust:latest
+
+      - name: Build rust-leptos
+        run: |
+          podman build --build-arg REGISTRY=${{ env.REGISTRY }} \
+                       --build-arg NAMESPACE=${{ env.NAMESPACE }} \
+                       --build-arg BASE_VERSION=${{ steps.version.outputs.version }} \
+                       -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust-leptos:${{ steps.version.outputs.version }} \
+                       -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust-leptos:latest \
+                       ./rust-leptos
+
+      - name: Smoke test rust-leptos (tool versions)
+        run: |
+          set -euo pipefail
+          IMAGE="${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust-leptos:${{ steps.version.outputs.version }}"
+          echo "::group::cargo-leptos --version"
+          podman run --rm "${IMAGE}" cargo-leptos --version
+          echo "::endgroup::"
+          echo "::group::wasm-bindgen --version (expect 0.2.108)"
+          podman run --rm "${IMAGE}" wasm-bindgen --version | grep -F '0.2.108'
+          echo "::endgroup::"
+          echo "::group::wasm-opt --version (expect version_119)"
+          podman run --rm "${IMAGE}" wasm-opt --version | grep -F 'version_119'
+          echo "::endgroup::"
+          echo "::group::psql --version"
+          podman run --rm "${IMAGE}" psql --version
+          echo "::endgroup::"
+          echo "::group::jq --version"
+          podman run --rm "${IMAGE}" jq --version
+          echo "::endgroup::"
+          echo "::group::wasm32 target installed"
+          podman run --rm "${IMAGE}" rustup target list --installed | grep -F 'wasm32-unknown-unknown'
+          echo "::endgroup::"
+
+      - name: Push rust-leptos
+        run: |
+          podman push ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust-leptos:${{ steps.version.outputs.version }}
+          podman push ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust-leptos:latest

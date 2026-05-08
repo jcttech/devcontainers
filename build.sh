@@ -54,6 +54,16 @@ docker build \
     ./python-rust
 
 echo ""
+echo "Building rust-leptos image..."
+docker build \
+    --build-arg REGISTRY="${REGISTRY}" \
+    --build-arg NAMESPACE="${NAMESPACE}" \
+    --build-arg BASE_VERSION="${VERSION}" \
+    -t "${REGISTRY}/${NAMESPACE}/devcontainer-rust-leptos:${VERSION}" \
+    -t "${REGISTRY}/${NAMESPACE}/devcontainer-rust-leptos:latest" \
+    ./rust-leptos
+
+echo ""
 echo "=========================================="
 echo "Build complete!"
 echo "=========================================="
@@ -63,9 +73,11 @@ echo "  - ${REGISTRY}/${NAMESPACE}/devcontainer-base:${VERSION}"
 echo "  - ${REGISTRY}/${NAMESPACE}/devcontainer-python:${VERSION}"
 echo "  - ${REGISTRY}/${NAMESPACE}/devcontainer-rust:${VERSION}"
 echo "  - ${REGISTRY}/${NAMESPACE}/devcontainer-python-rust:${VERSION}"
+echo "  - ${REGISTRY}/${NAMESPACE}/devcontainer-rust-leptos:${VERSION}"
 echo ""
 echo "To push all:"
 echo "  docker push ${REGISTRY}/${NAMESPACE}/devcontainer-base --all-tags"
 echo "  docker push ${REGISTRY}/${NAMESPACE}/devcontainer-python --all-tags"
 echo "  docker push ${REGISTRY}/${NAMESPACE}/devcontainer-rust --all-tags"
 echo "  docker push ${REGISTRY}/${NAMESPACE}/devcontainer-python-rust --all-tags"
+echo "  docker push ${REGISTRY}/${NAMESPACE}/devcontainer-rust-leptos --all-tags"
