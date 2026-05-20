@@ -7,6 +7,8 @@ ARG CLAUDE_CODE_VERSION=latest
 ARG GH_VERSION=2.90.0
 ARG GIT_DELTA_VERSION=0.19.2
 ARG ZSH_IN_DOCKER_VERSION=1.2.1
+ARG ZELLIJ_VERSION=0.42.2
+ARG CSM_PLUGIN_VERSION=v4.0.0
 
 # Skip dubious ownership firing
 RUN git config --system --add safe.directory '*'
@@ -48,12 +50,27 @@ RUN ARCH=$(dpkg --print-architecture) && \
     dpkg -i "gh_${GH_VERSION}_linux_${ARCH}.deb" && \
     rm "gh_${GH_VERSION}_linux_${ARCH}.deb"
 
-# Install agent worker and gRPC dependencies for claude-session-manager
-ARG AGENT_WORKER_VERSION=2.1.0
-RUN pip install --break-system-packages \
-    grpcio>=1.60.0 \
-    protobuf>=4.25.0 \
-    https://github.com/jcttech/claude-session-manager/releases/download/agent-worker/v${AGENT_WORKER_VERSION}/agent_worker-${AGENT_WORKER_VERSION}-py3-none-any.whl
+# Install zellij (terminal multiplexer used by claude-session-manager for
+# pane control via `zellij --session <name> action ...`).
+RUN ARCH=$(uname -m) && \
+    wget -O /tmp/zellij.tar.gz "https://github.com/zellij-org/zellij/releases/download/v${ZELLIJ_VERSION}/zellij-${ARCH}-unknown-linux-musl.tar.gz" && \
+    tar -xzf /tmp/zellij.tar.gz -C /usr/local/bin/ && \
+    chmod +x /usr/local/bin/zellij && \
+    rm /tmp/zellij.tar.gz
+
+# Install csm-plugin (team CLI + csm-claude wrapper + plugin manifest) from
+# the claude-session-manager devcontainer-artifacts release. Frozen copy
+# lives under /etc/csm-plugin/; the postStartCommand seeds it into the
+# user's ~/.claude/plugins/csm/ on each container start so version bumps
+# propagate through the shared `claude-config-shared` volume.
+RUN mkdir -p /etc/csm-plugin && \
+    wget -O /tmp/csm-plugin.tar.gz "https://github.com/jcttech/claude-session-manager/releases/download/devcontainer-artifacts/${CSM_PLUGIN_VERSION}/devcontainer-artifacts-${CSM_PLUGIN_VERSION}.tar.gz" && \
+    tar -xzf /tmp/csm-plugin.tar.gz -C /tmp && \
+    cp /tmp/devcontainer-artifacts/bin/team /etc/csm-plugin/team && \
+    cp /tmp/devcontainer-artifacts/bin/csm-claude /usr/local/bin/csm-claude && \
+    cp /tmp/devcontainer-artifacts/plugin-manifest/.claude-plugin/plugin.json /etc/csm-plugin/plugin.json && \
+    chmod +x /etc/csm-plugin/team /usr/local/bin/csm-claude && \
+    rm -rf /tmp/csm-plugin.tar.gz /tmp/devcontainer-artifacts
 
 # Install git-delta for better diffs
 RUN ARCH=$(dpkg --print-architecture) && \
@@ -117,13 +134,15 @@ COPY start-podman-socket.sh /usr/local/bin/start-podman-socket.sh
 RUN chmod +x /usr/local/bin/start-podman-socket.sh
 ENV DOCKER_HOST=unix:///var/run/docker.sock
 
+# Install csm-plugin seed script (runs from postStartCommand to populate
+# the claude-config-shared volume with the frozen plugin artifacts).
+COPY csm-plugin-seed.sh /usr/local/bin/csm-plugin-seed.sh
+RUN chmod +x /usr/local/bin/csm-plugin-seed.sh
+
 # Set default shell to zsh
 ENV SHELL=/bin/zsh
 ENV EDITOR=nano
 ENV VISUAL=nano
-
-# VS Code extensions
-EXPOSE 50051
 
 LABEL devcontainer.metadata='{ \
     "customizations": { \
@@ -139,7 +158,7 @@ LABEL devcontainer.metadata='{ \
             ] \
         } \
     }, \
-    "postStartCommand": "sudo /usr/local/bin/start-podman-socket.sh && python3 -m agent_worker --port 50051 &" \
+    "postStartCommand": "sudo /usr/local/bin/start-podman-socket.sh && /usr/local/bin/csm-plugin-seed.sh" \
 }'
 
 USER ${USERNAME}

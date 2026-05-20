@@ -6,7 +6,7 @@ Pre-built devcontainer images with Claude Code CLI, common development tools, an
 
 | Image | Description |
 |-------|-------------|
-| `ghcr.io/jcttech/devcontainer-base` | Claude Code CLI + agent worker + common tools (zsh, fzf, git-delta, gh) |
+| `ghcr.io/jcttech/devcontainer-base` | Claude Code CLI + zellij + csm-plugin + common tools (zsh, fzf, git-delta, gh) |
 | `ghcr.io/jcttech/devcontainer-python` | Base + Python 3.13 + uv |
 | `ghcr.io/jcttech/devcontainer-rust` | Base + Rust toolchain |
 | `ghcr.io/jcttech/devcontainer-python-rust` | Python + Rust combined |
@@ -82,7 +82,7 @@ docker push ghcr.io/jcttech/devcontainer-rust-leptos --all-tags
 ## Image Hierarchy
 
 ```
-base (Debian Trixie + Claude Code + agent worker + tools)
+base (Debian Trixie + Claude Code + zellij + csm-plugin + tools)
 ├── python (+ Python 3.13 + uv)
 │   └── python-rust (+ Rust)
 └── rust (+ Rust)
@@ -94,7 +94,8 @@ base (Debian Trixie + Claude Code + agent worker + tools)
 ### Base Image
 - Debian Trixie (Python 3.13)
 - Claude Code CLI
-- Agent worker (gRPC service on port 50051 for claude-session-manager)
+- zellij (terminal multiplexer; session-manager controls panes via `zellij action`)
+- csm-plugin (`team` CLI + `csm-claude` wrapper + plugin manifest, for claude-session-manager v4 integration)
 - zsh with powerlevel10k
 - fzf, git-delta, gh CLI
 - nano, vim, jq
