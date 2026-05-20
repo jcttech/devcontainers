@@ -33,10 +33,6 @@ on:
         description: 'zellij version'
         required: false
         default: '0.42.2'
-      csm_plugin_version:
-        description: 'csm-plugin (devcontainer-artifacts) version tag (e.g. v4.0.0)'
-        required: false
-        default: 'v4.0.0'
 
 env:
   REGISTRY: ghcr.io
@@ -77,7 +73,6 @@ jobs:
                        --build-arg GIT_DELTA_VERSION=${{ inputs.git_delta_version }} \
                        --build-arg ZSH_IN_DOCKER_VERSION=${{ inputs.zsh_in_docker_version }} \
                        --build-arg ZELLIJ_VERSION=${{ inputs.zellij_version }} \
-                       --build-arg CSM_PLUGIN_VERSION=${{ inputs.csm_plugin_version }} \
                        -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:${{ steps.version.outputs.version }} \
                        -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:latest \
                        ./base
