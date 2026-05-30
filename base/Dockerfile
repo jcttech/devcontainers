@@ -40,7 +40,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     uidmap \
     slirp4netns \
     fuse-overlayfs \
+    libcap2-bin \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Make CAP_SYS_ADMIN effective for podman when invoked by the non-root
+# vscode user. The cap must also be in the pod's bounding set via
+# securityContext.capabilities.add for this to take effect.
+RUN setcap cap_sys_admin+eip /usr/bin/podman
 
 # Install GitHub CLI from official release
 RUN ARCH=$(dpkg --print-architecture) && \
