@@ -29,10 +29,10 @@ on:
         description: 'zsh-in-docker version'
         required: false
         default: '1.2.1'
-      agent_worker_version:
-        description: 'agent-worker version'
+      zellij_version:
+        description: 'zellij version'
         required: false
-        default: '3.0.0'
+        default: '0.42.2'
 
 env:
   REGISTRY: ghcr.io
@@ -72,7 +72,7 @@ jobs:
                        --build-arg GH_VERSION=${{ inputs.gh_version }} \
                        --build-arg GIT_DELTA_VERSION=${{ inputs.git_delta_version }} \
                        --build-arg ZSH_IN_DOCKER_VERSION=${{ inputs.zsh_in_docker_version }} \
-                       --build-arg AGENT_WORKER_VERSION=${{ inputs.agent_worker_version }} \
+                       --build-arg ZELLIJ_VERSION=${{ inputs.zellij_version }} \
                        -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:${{ steps.version.outputs.version }} \
                        -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:latest \
                        ./base

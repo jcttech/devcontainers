@@ -7,6 +7,7 @@ ARG CLAUDE_CODE_VERSION=latest
 ARG GH_VERSION=2.90.0
 ARG GIT_DELTA_VERSION=0.19.2
 ARG ZSH_IN_DOCKER_VERSION=1.2.1
+ARG ZELLIJ_VERSION=0.42.2
 
 # Skip dubious ownership firing
 RUN git config --system --add safe.directory '*'
@@ -54,12 +55,16 @@ RUN ARCH=$(dpkg --print-architecture) && \
     dpkg -i "gh_${GH_VERSION}_linux_${ARCH}.deb" && \
     rm "gh_${GH_VERSION}_linux_${ARCH}.deb"
 
-# Install agent worker and gRPC dependencies for claude-session-manager
-ARG AGENT_WORKER_VERSION=2.1.0
-RUN pip install --break-system-packages \
-    grpcio>=1.60.0 \
-    protobuf>=4.25.0 \
-    https://github.com/jcttech/claude-session-manager/releases/download/agent-worker/v${AGENT_WORKER_VERSION}/agent_worker-${AGENT_WORKER_VERSION}-py3-none-any.whl
+# Install zellij (terminal multiplexer used by claude-session-manager for
+# pane control via `zellij --session <name> action ...`). The csm-plugin
+# itself is installed per-user into ~/.claude/plugins/csm/ via the normal
+# claude plugin install flow — it lives in the shared claude-config volume
+# and persists across containers.
+RUN ARCH=$(uname -m) && \
+    wget -O /tmp/zellij.tar.gz "https://github.com/zellij-org/zellij/releases/download/v${ZELLIJ_VERSION}/zellij-${ARCH}-unknown-linux-musl.tar.gz" && \
+    tar -xzf /tmp/zellij.tar.gz -C /usr/local/bin/ && \
+    chmod +x /usr/local/bin/zellij && \
+    rm /tmp/zellij.tar.gz
 
 # Install git-delta for better diffs
 RUN ARCH=$(dpkg --print-architecture) && \
@@ -128,9 +133,6 @@ ENV SHELL=/bin/zsh
 ENV EDITOR=nano
 ENV VISUAL=nano
 
-# VS Code extensions
-EXPOSE 50051
-
 LABEL devcontainer.metadata='{ \
     "customizations": { \
         "vscode": { \
@@ -145,7 +147,7 @@ LABEL devcontainer.metadata='{ \
             ] \
         } \
     }, \
-    "postStartCommand": "sudo /usr/local/bin/start-podman-socket.sh && python3 -m agent_worker --port 50051 &" \
+    "postStartCommand": "sudo /usr/local/bin/start-podman-socket.sh" \
 }'
 
 USER ${USERNAME}
