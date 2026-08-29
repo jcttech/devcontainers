@@ -30,7 +30,13 @@ USER vscode
 RUN rustup target add wasm32-unknown-unknown
 
 # cargo-leptos — orchestrates SSR + hydrate halves.
-RUN cargo install cargo-leptos --locked
+# LEPTOS_VERSION is the leptos *crate* version, exposed as an env var for
+# project scaffolding; CARGO_LEPTOS_VERSION pins the CLI, which versions
+# independently of the framework.
+ARG LEPTOS_VERSION=0.8.19
+ARG CARGO_LEPTOS_VERSION=0.3.7
+ENV LEPTOS_VERSION=${LEPTOS_VERSION}
+RUN cargo install cargo-leptos --version "${CARGO_LEPTOS_VERSION}" --locked
 
 # wasm-bindgen-cli pinned to match the workspace wasm-bindgen pin
 # (cargo-leptos refuses to build on a mismatch). Bump in lockstep with the

@@ -4,10 +4,10 @@ ARG TZ
 ENV TZ="$TZ"
 
 ARG CLAUDE_CODE_VERSION=latest
-ARG GH_VERSION=2.90.0
+ARG GH_VERSION=2.98.0
 ARG GIT_DELTA_VERSION=0.19.2
 ARG ZSH_IN_DOCKER_VERSION=1.2.1
-ARG ZELLIJ_VERSION=0.42.2
+ARG ZELLIJ_VERSION=0.45.1
 
 # Skip dubious ownership firing
 RUN git config --system --add safe.directory '*'

@@ -20,7 +20,7 @@ on:
       gh_version:
         description: 'GitHub CLI version'
         required: false
-        default: '2.92.0'
+        default: '2.98.0'
       git_delta_version:
         description: 'git-delta version'
         required: false
@@ -32,11 +32,30 @@ on:
       zellij_version:
         description: 'zellij version'
         required: false
-        default: '0.42.2'
+        default: '0.45.1'
+      leptos_version:
+        description: 'leptos crate version (exposed as LEPTOS_VERSION in the rust-leptos image)'
+        required: false
+        default: '0.8.19'
+      cargo_leptos_version:
+        description: 'cargo-leptos CLI version'
+        required: false
+        default: '0.3.7'
 
 env:
   REGISTRY: ghcr.io
   NAMESPACE: jcttech
+  # `inputs` is empty on the tag-push trigger, so these fall back to the same
+  # values as the workflow_dispatch defaults rather than passing empty
+  # --build-arg values that would override the Dockerfile defaults.
+  TZ_ARG: ${{ inputs.tz || 'UTC' }}
+  CLAUDE_CODE_VERSION: ${{ inputs.claude_code_version || 'latest' }}
+  GH_VERSION: ${{ inputs.gh_version || '2.98.0' }}
+  GIT_DELTA_VERSION: ${{ inputs.git_delta_version || '0.19.2' }}
+  ZSH_IN_DOCKER_VERSION: ${{ inputs.zsh_in_docker_version || '1.2.1' }}
+  ZELLIJ_VERSION: ${{ inputs.zellij_version || '0.45.1' }}
+  LEPTOS_VERSION: ${{ inputs.leptos_version || '0.8.19' }}
+  CARGO_LEPTOS_VERSION: ${{ inputs.cargo_leptos_version || '0.3.7' }}
 
 jobs:
   build:
@@ -67,12 +86,12 @@ jobs:
       - name: Build and push base
         run: |
           podman build \
-                       --build-arg TZ=${{ inputs.tz }} \
-                       --build-arg CLAUDE_CODE_VERSION=${{ inputs.claude_code_version }} \
-                       --build-arg GH_VERSION=${{ inputs.gh_version }} \
-                       --build-arg GIT_DELTA_VERSION=${{ inputs.git_delta_version }} \
-                       --build-arg ZSH_IN_DOCKER_VERSION=${{ inputs.zsh_in_docker_version }} \
-                       --build-arg ZELLIJ_VERSION=${{ inputs.zellij_version }} \
+                       --build-arg TZ="${TZ_ARG}" \
+                       --build-arg CLAUDE_CODE_VERSION="${CLAUDE_CODE_VERSION}" \
+                       --build-arg GH_VERSION="${GH_VERSION}" \
+                       --build-arg GIT_DELTA_VERSION="${GIT_DELTA_VERSION}" \
+                       --build-arg ZSH_IN_DOCKER_VERSION="${ZSH_IN_DOCKER_VERSION}" \
+                       --build-arg ZELLIJ_VERSION="${ZELLIJ_VERSION}" \
                        -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:${{ steps.version.outputs.version }} \
                        -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-base:latest \
                        ./base
@@ -95,6 +114,8 @@ jobs:
           podman build --build-arg REGISTRY=${{ env.REGISTRY }} \
                        --build-arg NAMESPACE=${{ env.NAMESPACE }} \
                        --build-arg BASE_VERSION=${{ steps.version.outputs.version }} \
+                       --build-arg LEPTOS_VERSION="${LEPTOS_VERSION}" \
+                       --build-arg CARGO_LEPTOS_VERSION="${CARGO_LEPTOS_VERSION}" \
                        -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust-leptos:${{ steps.version.outputs.version }} \
                        -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust-leptos:latest \
                        ./rust-leptos
@@ -103,8 +124,11 @@ jobs:
         run: |
           set -euo pipefail
           IMAGE="${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust-leptos:${{ steps.version.outputs.version }}"
-          echo "::group::cargo-leptos --version"
-          podman run --rm "${IMAGE}" cargo-leptos --version
+          echo "::group::cargo-leptos --version (expect ${CARGO_LEPTOS_VERSION})"
+          podman run --rm "${IMAGE}" cargo-leptos --version | grep -F "${CARGO_LEPTOS_VERSION}"
+          echo "::endgroup::"
+          echo "::group::LEPTOS_VERSION env (expect ${LEPTOS_VERSION})"
+          podman run --rm "${IMAGE}" printenv LEPTOS_VERSION | grep -Fx "${LEPTOS_VERSION}"
           echo "::endgroup::"
           echo "::group::wasm-bindgen --version (expect 0.2.108)"
           podman run --rm "${IMAGE}" wasm-bindgen --version | grep -F '0.2.108'
