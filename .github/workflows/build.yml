@@ -41,6 +41,10 @@ on:
         description: 'cargo-leptos CLI version'
         required: false
         default: '0.3.7'
+      nextest_version:
+        description: 'cargo-nextest version'
+        required: false
+        default: '0.9.143'
 
 env:
   REGISTRY: ghcr.io
@@ -56,6 +60,7 @@ env:
   ZELLIJ_VERSION: ${{ inputs.zellij_version || '0.45.1' }}
   LEPTOS_VERSION: ${{ inputs.leptos_version || '0.8.19' }}
   CARGO_LEPTOS_VERSION: ${{ inputs.cargo_leptos_version || '0.3.7' }}
+  NEXTEST_VERSION: ${{ inputs.nextest_version || '0.9.143' }}
 
 jobs:
   build:
@@ -103,6 +108,7 @@ jobs:
           podman build --build-arg REGISTRY=${{ env.REGISTRY }} \
                        --build-arg NAMESPACE=${{ env.NAMESPACE }} \
                        --build-arg BASE_VERSION=${{ steps.version.outputs.version }} \
+                       --build-arg NEXTEST_VERSION="${NEXTEST_VERSION}" \
                        -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust:${{ steps.version.outputs.version }} \
                        -t ${{ env.REGISTRY }}/${{ env.NAMESPACE }}/devcontainer-rust:latest \
                        ./rust
@@ -144,6 +150,9 @@ jobs:
           echo "::endgroup::"
           echo "::group::wasm32 target installed"
           podman run --rm "${IMAGE}" rustup target list --installed | grep -F 'wasm32-unknown-unknown'
+          echo "::endgroup::"
+          echo "::group::cargo-nextest --version (expect ${NEXTEST_VERSION})"
+          podman run --rm "${IMAGE}" cargo-nextest --version | grep -F "${NEXTEST_VERSION}"
           echo "::endgroup::"
 
       - name: Push rust-leptos

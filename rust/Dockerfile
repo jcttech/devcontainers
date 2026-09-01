@@ -36,6 +36,15 @@ RUN . "$HOME/.cargo/env" && \
     rustup component add rustfmt clippy && \
     cargo install cargo-watch cargo-edit
 
+# Install cargo-nextest from prebuilt binaries (much faster than `cargo install`)
+ARG NEXTEST_VERSION=0.9.143
+RUN ARCH=$(dpkg --print-architecture) && \
+    case ${ARCH} in \
+        amd64) NEXTEST_TARGET="linux" ;; \
+        arm64) NEXTEST_TARGET="linux-arm" ;; \
+    esac && \
+    curl -LsSf "https://get.nexte.st/${NEXTEST_VERSION}/${NEXTEST_TARGET}" | tar zxf - -C "$HOME/.cargo/bin"
+
 # Install sccache for shared compilation caching
 USER root
 ARG SCCACHE_VERSION=0.13.0
