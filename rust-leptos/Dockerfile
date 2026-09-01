@@ -83,3 +83,46 @@ LABEL devcontainer.metadata='{ \
         } \
     } \
 }'
+
+# ── Chrome for Testing + matched chromedriver (browser e2e) ────────────────
+# jcttech/trading Story #310: the web-e2e CI job downloaded Chrome + a
+# version-matched chromedriver from dl.google.com / the CfT CDN on EVERY
+# cold ARC pod (~1–2 min per run) — and those fetches were an observed
+# network-flake surface (2 of 4 infra failures on 2026-07-04). Baking a
+# PINNED CfT pair keeps browser + driver matched by construction and
+# removes both the setup time and the egress dependency.
+#
+# CfT publishes linux binaries for x86_64 only — arm64 images (Apple
+# Silicon local dev) skip the bake and fall back to the consumer's own
+# install path (jcttech/trading scripts/install-chromedriver.sh or the
+# workflow's guarded install step).
+#
+# Bumping Chrome: bump CHROME_VERSION to any version listed in
+# https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
+# — chrome and chromedriver ship from the same version directory, so they
+# can never skew.
+USER root
+ARG CHROME_VERSION=150.0.7871.46
+RUN ARCH=$(dpkg --print-architecture) && \
+    if [ "${ARCH}" != "amd64" ]; then \
+        echo "Chrome for Testing: no linux-${ARCH} builds published — skipping bake"; \
+    else \
+        apt-get update && apt-get install -y --no-install-recommends \
+            ca-certificates fonts-liberation libasound2 libatk-bridge2.0-0 \
+            libatk1.0-0 libatspi2.0-0 libcairo2 libcups2 libdbus-1-3 \
+            libdrm2 libgbm1 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 \
+            libpango-1.0-0 libx11-6 libxcb1 libxcomposite1 libxdamage1 \
+            libxext6 libxfixes3 libxkbcommon0 libxrandr2 unzip xdg-utils \
+        && apt-get clean && rm -rf /var/lib/apt/lists/* && \
+        CDN="https://storage.googleapis.com/chrome-for-testing-public/${CHROME_VERSION}/linux64" && \
+        curl -fsSL --retry 5 --retry-all-errors "${CDN}/chrome-linux64.zip" -o /tmp/chrome.zip && \
+        curl -fsSL --retry 5 --retry-all-errors "${CDN}/chromedriver-linux64.zip" -o /tmp/chromedriver.zip && \
+        mkdir -p /opt/chrome-for-testing && \
+        unzip -q /tmp/chrome.zip -d /opt/chrome-for-testing && \
+        unzip -q -j /tmp/chromedriver.zip '*/chromedriver' -d /opt/chrome-for-testing && \
+        ln -sf /opt/chrome-for-testing/chrome-linux64/chrome /usr/local/bin/google-chrome && \
+        ln -sf /opt/chrome-for-testing/chromedriver /usr/local/bin/chromedriver && \
+        rm -f /tmp/chrome.zip /tmp/chromedriver.zip && \
+        google-chrome --version && chromedriver --version; \
+    fi
+USER vscode
