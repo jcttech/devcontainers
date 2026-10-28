@@ -10,7 +10,7 @@ Pre-built devcontainer images with Claude Code CLI, common development tools, an
 | `ghcr.io/jcttech/devcontainer-python` | Base + Python 3.13 + uv |
 | `ghcr.io/jcttech/devcontainer-rust` | Base + Rust toolchain |
 | `ghcr.io/jcttech/devcontainer-python-rust` | Python + Rust combined |
-| `ghcr.io/jcttech/devcontainer-rust-leptos` | Rust + WASM (cargo-leptos, wasm-bindgen, wasm-opt) + postgresql-client + jq |
+| `ghcr.io/jcttech/devcontainer-rust-leptos` | Rust + WASM (cargo-leptos, wasm-bindgen, wasm-opt) + postgresql-client + jq + Chrome for Testing / chromedriver (amd64) |
 
 ## Usage
 
@@ -58,6 +58,11 @@ Available tags:
 Images are built and pushed automatically:
 - **On version tag** → tagged with version (e.g., `1.0.0`) + `latest`
 - **Manual trigger** → optionally specify version, or defaults to `latest`
+- **Pull request** (touching an image or `build.yml`) → builds every image and
+  runs the smoke test, but pushes nothing
+
+Merging to `main` publishes nothing. Every publish (tag or manual) re-tags
+`:latest` for **all** images at once.
 
 To release a new version:
 ```bash
@@ -86,7 +91,7 @@ base (Debian Trixie + Claude Code + zellij + tools)
 ├── python (+ Python 3.13 + uv)
 │   └── python-rust (+ Rust)
 └── rust (+ Rust)
-    └── rust-leptos (+ WASM toolchain + postgresql-client + jq)
+    └── rust-leptos (+ WASM toolchain + postgresql-client + jq + Chrome for Testing)
 ```
 
 ## What's Included
@@ -115,13 +120,19 @@ The `csm-plugin` is installed separately into `~/.claude/plugins/csm/` (same as 
 - Everything in the Rust image, plus:
 - `wasm32-unknown-unknown` rustup target
 - `cargo-leptos` (Leptos SSR + hydrate orchestrator)
-- `wasm-bindgen-cli` (pinned via the `WASM_BINDGEN_VERSION` build arg, default `0.2.108`)
+- `wasm-bindgen-cli` (pinned via the `WASM_BINDGEN_VERSION` build arg, default `0.2.129`)
 - `wasm-opt` (binaryen, pinned via the `BINARYEN_VERSION` build arg, default `version_119`)
 - `postgresql-client`, `jq`
+- Chrome for Testing + its matched `chromedriver` on `PATH` as `google-chrome` /
+  `chromedriver` (pinned via the `CHROME_VERSION` build arg, default
+  `156.0.8078.73`; amd64 only, as CfT publishes no linux-arm64 build)
 
-To bump the WASM toolchain: edit the `WASM_BINDGEN_VERSION` / `BINARYEN_VERSION`
-ARGs in `rust-leptos/Dockerfile`, merge to `main`, and `:latest` republishes
-to GHCR. Downstream consumers pick up the new versions on next pull.
+To bump a pinned tool: edit its ARG in `rust-leptos/Dockerfile` (the comments
+there give each bump path), open a PR (CI builds and smoke-tests it), merge,
+then push the next `X.Y.Z` tag to republish. Downstream consumers pick up the
+new versions on their next pull of `:latest`. A downstream that pins the
+`wasm-bindgen` crate exactly (jcttech/trading) breaks on a new CLI until its
+own pin PR merges, so tag only when that PR is ready.
 
 ## Environment Variables
 
